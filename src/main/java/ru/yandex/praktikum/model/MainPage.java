@@ -5,22 +5,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static ru.yandex.praktikum.model.constants.Uri.MAIN_PAGE;
+
 
 public class MainPage {
     private WebDriver driver;
-    public MainPage(WebDriver driver) {
-        this.driver = driver;
-    }
-    //метод открытия главной страницы
-    public void openPage() {
-        driver.get("https://stellarburgers.nomoreparties.site/");
-    }
 
-    // метод ожидания загрузки страницы
-    public void waitForOpenPage() {
-        new WebDriverWait(driver, 15)
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"root\"]/div/header/nav/a/p")));
-    }
     // Локатор для кнопки Войти в аккаунт
     private By logInButton = By.xpath("//*[@id='root']/div/main/section[2]/div/button");
 
@@ -37,6 +27,22 @@ public class MainPage {
     // Локаторы для указателя Соусы в Конструкторе
     private By saucesPointer = By.xpath(".//span[text()='Соусы']");
     private By saucesPointerParent = By.xpath(".//span[text()='Соусы']/parent::div");
+
+    // Конструктор класса
+    public MainPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    //метод открытия главной страницы
+    public void openPage() {
+        driver.get(MAIN_PAGE);
+    }
+
+    // метод ожидания загрузки страницы
+    public void waitForOpenPage() {
+        new WebDriverWait(driver, 15)
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"root\"]/div/header/nav/a/p")));
+    }
 
     // Метод клика по кнопке Личный кабинет
     public void clickPersonalAccountButton() {

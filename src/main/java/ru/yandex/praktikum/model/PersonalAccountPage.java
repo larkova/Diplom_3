@@ -7,15 +7,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class PersonalAccountPage {
 
     private WebDriver driver;
-    public PersonalAccountPage (WebDriver driver) {
-        this.driver = driver;
-    }
-
-    public void waitForOpenPage() {
-        new WebDriverWait(driver, 15)
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='root']/div/main/div/nav/ul/li[3]/button")));
-    }
-
 
     // Локатор кнопки Профиль
     private By profileButton = By.xpath("//*[@id='root']/div/main/div/nav/ul/li[1]/a");
@@ -28,6 +19,17 @@ public class PersonalAccountPage {
 
     // Локатор кнопки Выход
     private By logoutButton = By.xpath("//*[@id='root']/div/main/div/nav/ul/li[3]/button");
+
+    // Конструктор класса
+    public PersonalAccountPage (WebDriver driver) {
+        this.driver = driver;
+    }
+
+    // метод ожидания загрузки страницы
+    public void waitForOpenPage() {
+        new WebDriverWait(driver, 15)
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='root']/div/main/div/nav/ul/li[3]/button")));
+    }
 
     // Метод проверки отображения кнопки Выход
     public boolean isLogoutButtonDisplayed() {

@@ -5,22 +5,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static ru.yandex.praktikum.model.constants.Uri.REGISTRATION_PAGE;
+
 public class RegistrationPage {
 
     private WebDriver driver;
-    public RegistrationPage (WebDriver driver) {
-        this.driver = driver;
-    }
-    //метод открытия страницы
-    public void openPage() {
-        driver.get("https://stellarburgers.nomoreparties.site/register");
-    }
-
-    // метод ожидания загрузки страницы
-    public void waitForOpenPage() {
-        new WebDriverWait(driver, 5)
-               .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='root']/div/main/div/form/fieldset[1]/div/div/input")));
-    }
 
     // Локатор поля Имя
     private By nameInput = By.xpath("//*[@id='root']/div/main/div/form/fieldset[1]/div/div/input");
@@ -40,6 +29,21 @@ public class RegistrationPage {
     // Локатор надписи Некорректный пароль
     private By incorrectPasswordTitle = By.xpath("//*[@id='root']/div/main/div/form/fieldset[3]/div/p");
 
+    // Конструктор класса
+    public RegistrationPage (WebDriver driver) {
+        this.driver = driver;
+    }
+
+    //метод открытия страницы
+    public void openPage() {
+        driver.get(REGISTRATION_PAGE);
+    }
+
+    // метод ожидания загрузки страницы
+    public void waitForOpenPage() {
+        new WebDriverWait(driver, 5)
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='root']/div/main/div/form/fieldset[1]/div/div/input")));
+    }
 
     // Метод заполнения поля Имя
     public void setName (String name) {
