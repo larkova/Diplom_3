@@ -5,6 +5,7 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
+import io.restassured.response.ValidatableResponse;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -18,9 +19,10 @@ import ru.yandex.praktikum.model.api.UserGenerator;
 
 public class RegistrationTest {
     private UserClient userClient;
-    private UserCredentials credentials;
     private String accessToken;
     private WebDriver driver;
+    private User user = UserGenerator.getRandom();
+    private UserGenerator userGenerator = new UserGenerator();
 
     @BeforeClass
     public static void globalSetUp() {
@@ -34,19 +36,13 @@ public class RegistrationTest {
         // открыть браузер
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        // создать пользователя
-        userClient = new UserClient();
-        User user = UserGenerator.getRandom();
-        userClient.createUser(user);
-        //получить токен для удаления пользователя
-        accessToken = userClient.login(UserCredentials.from(user))
-                .extract().path("accessToken");
-        credentials = UserCredentials.from(user);
     }
     @After
     public void teardown() {
-        // Удалить пользователя
-        userClient.delete(accessToken);
+        //Удалить пользователя
+        if (accessToken != null) {
+            userClient.delete(accessToken);
+        }
         // Закрыть браузер
         driver.quit();
     }
@@ -58,35 +54,44 @@ public class RegistrationTest {
         LogInPage logIn = new LogInPage(driver);
         MainPage main = new MainPage(driver);
         PersonalAccountPage personalAccount = new PersonalAccountPage(driver);
+        userClient = new UserClient();
 
         registration.openPage();
-        registration.setName(credentials.getName());
-        registration.setEmail(credentials.getEmail());
-        registration.setPassword(credentials.getPassword());
+        registration.setName(user.getName());
+        registration.setEmail(user.getEmail());
+        registration.setPassword(user.getPassword());
         registration.clickRegistrationButton();
         logIn.openPage();
-        logIn.setEmail(credentials.getEmail());
-        logIn.setPassword(credentials.getPassword());
+        logIn.setEmail(user.getEmail());
+        logIn.setPassword(user.getPassword());
         logIn.clickLogInButton();
         main.waitForOpenPage();
         main.clickPersonalAccountButton();
         personalAccount.waitForOpenPage();
 
         Assert.assertTrue("Не произошел переход в ЛК", personalAccount.isLogoutButtonDisplayed());
+        personalAccount.clickLogoutButton();
+
+        ValidatableResponse loginResponse = userClient.login(UserCredentials.from(user));
+        accessToken = loginResponse.extract().path("accessToken");
+
     }
     @Test
     @DisplayName("Регистрация пользователя c некорректным паролем")
     @Description("Негативный кейс регистрации пользователя с корретными данными")
     public void checkRegistrationWithIncorrectData() {
         RegistrationPage registration = new RegistrationPage(driver);
-        DataForRegistration dataForRegistration = DataForRegistrationGenerator.getRandomIncorrectData();
+        userClient = new UserClient();
 
         registration.openPage();
-        registration.setName(dataForRegistration.name);
-        registration.setEmail(dataForRegistration.email);
-        registration.setPassword(dataForRegistration.password);
+        registration.setName(user.getName());
+        registration.setEmail(user.getEmail());
+        registration.setPassword(user.setPassword("123"));
         registration.clickRegistrationButton();
 
         Assert.assertTrue("Сообщение о некорректном пароле не отображается", registration.isIncorrectPasswordTitleDisplayed());
+
+        ValidatableResponse loginResponse = userClient.login(UserCredentials.from(user));
+        accessToken = loginResponse.extract().path("accessToken");
     }
 }
